@@ -1,6 +1,7 @@
 import express from 'express';
 import DB from './db.js'
 
+
 const PORT = process.env.PORT || 3000;
 
 /** Zentrales Objekt für unsere Express-Applikation */
@@ -22,6 +23,21 @@ async function initDB() {
  */
 app.get('/todos', async (req, res) => {
     let todos = await db.queryAll();
+    res.send(todos);
+});
+
+app.get('/todos/:id', async (req, res) => {
+    let todos = await db.queryById(req.params.id);
+    res.send(todos);
+});
+
+app.post('/todos', async (req, res) => {
+    let post = {
+        "title" : req.params.title,
+        "due" : req.params.due,
+        "status" : req.params.id
+    }
+    let todos = await db.insert(post);
     res.send(todos);
 });
 
