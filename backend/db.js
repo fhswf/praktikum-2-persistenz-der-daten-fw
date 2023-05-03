@@ -26,11 +26,15 @@ export default class DB {
     }
 
     update(id, order) {
-        // TODO: Implement update
+        const mongoId = new ObjectId(id);
+        let query = {"_id" : mongoId};
+        return collection.updateOne(query, {$set: order});
     }
 
     delete(id) {
-        // TODO: Implement delete
+        const mongoId = new ObjectId(id);
+        let query = {"_id" : mongoId};
+        return collection.deleteOne(query);
     }
 
     insert(order) {

@@ -3,10 +3,14 @@ import DB from './db.js'
 
 
 const PORT = process.env.PORT || 3000;
+import bodyParser from 'body-parser';
+
+
 
 /** Zentrales Objekt für unsere Express-Applikation */
 const app = express();
-
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 /** global instance of our database */
 let db = new DB();
 
@@ -33,22 +37,35 @@ app.get('/todos/:id', async (req, res) => {
 
 app.post('/todos', async (req, res) => {
     let post = {
-        "title" : req.params.title,
-        "due" : req.params.due,
-        "status" : req.params.id
+        "title" : req.body.title,
+        "due" : req.body.due,
+        "status" : req.body.status
     }
     let todos = await db.insert(post);
     res.send(todos);
 });
 
-//
-// YOUR CODE HERE
-//
-// Implement the following routes:
-// GET /todos/:id
-// POST /todos
-// PUT /todos/:id
-// DELETE /todos/:id
+app.put('/todos/:id', async (req, res) => {
+    let id = req.params.id;
+    const update = {};
+    if (req.body.title) {
+        update.title = req.body.title;
+    }
+    if (req.body.due) {
+        update.due = req.body.due;
+    }
+    if (req.body.status) {
+        update.status = req.body.status;
+    }
+    const result = await db.update(id, update);
+    let todos = await db.queryById(id);
+    res.send(todos);
+});
+
+app.delete('/todos/:id', async (req, res) => {
+    let todos = await db.delete(req.params.id);
+    res.send(todos);
+});
 
 
 initDB()
